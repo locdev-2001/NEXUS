@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\client\AuthController;
 use App\Http\Controllers\client\HomeController;
+use App\Http\Controllers\client\MediaController;
+use App\Http\Controllers\client\PostController;
 use App\Http\Controllers\client\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +21,10 @@ Route::group(['middleware'=>'login'],function (){
     Route::any('/', [HomeController::class,'index'])->name('client.home');
     Route::get('/logout', [AuthController::class, 'logout'])->name('client.logout');
     Route::any('/profile',[ProfileController::class,'index'])->name('client.profile');
+    Route::group(['prefix'=>'/post'],function (){
+        Route::post('/create',[PostController::class,'createPost'])->name('client.createPost');
+        Route::post('/media/store',[MediaController::class,'storeMedia'])->name('client.storeMedia');
+    });
 });
 //dang nhap bang facebook
 Route::group(['prefix'=>'auth/facebook'], function (){

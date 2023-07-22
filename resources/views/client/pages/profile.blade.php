@@ -18,7 +18,7 @@
         </div>
         <div class="right-dashboard-info">
             <div class="right-dashboard-info-top">
-                @if(User::getId() !== $user->id)
+                @if(UserHelpers::getId() !== $user->id)
                     <button type="button"><i class="fas fa-user-plus"></i>Thêm bạn</button>
                     <button type="button"><i class="far fa-envelope"></i> Nhắn tin</button>
                 @else

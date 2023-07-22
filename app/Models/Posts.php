@@ -18,7 +18,7 @@ class Posts extends Model
     protected $fillable = [
         'user_id',
         'content_text',
-        'mode',
+        'post_mode',
         'created_at',
         'updated_at'
     ];
@@ -32,5 +32,8 @@ class Posts extends Model
     }
     public function reactions(){
         return $this->hasMany(Post_reactions::class);
+    }
+    public function media(){
+        return $this->hasMany(Media::class);
     }
 }

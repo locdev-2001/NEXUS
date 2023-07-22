@@ -55,5 +55,7 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(User::class, 'tgz_friends', 'user_id', 'friend_id');
     }
-
+    public function media(){
+        return $this->hasMany(Media::class);
+    }
 }
