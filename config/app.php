@@ -235,7 +235,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
         'Socialite'=>Laravel\Socialite\Facades\Socialite::class,
-        'User'=>App\Helpers\user::class,
+        'UserHelpers'=>App\Helpers\UserHelpers::class,
     ],
 
 ];

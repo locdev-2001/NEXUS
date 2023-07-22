@@ -3,11 +3,11 @@
 namespace App\Helpers;
 use Illuminate\Support\Facades\Auth;
 
-class user{
+class UserHelpers{
     public function getUser(){
        return Auth::user();
     }
-    public function getId(){
+    public static function getId(){
         return Auth::id();
     }
 }

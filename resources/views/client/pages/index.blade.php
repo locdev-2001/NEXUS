@@ -1,5 +1,11 @@
 @extends('client.pages.layout')
 @section('main-content')
+<?php
+use App\Helpers\UserHelpers;
+$userHelpers = new UserHelpers();
+$authInf = $userHelpers->getUser();
+$authId = $userHelpers->getId();
+?>
 <div class="content-area">
     <div class="story-gallery">
         <div class="story story1">
@@ -27,38 +33,46 @@
         <div class="user-profile">
             <img src="{{asset('storage/client/images/profile-pic.jpg')}}">
             <div class="timeline_nexus">
-                <a class="modaal-popup" href="#post-upload"><span class="input000">Bạn đang nghĩ gì thế, {{User::getUser()->name}} ?</span></a>
+                <a class="modaal-popup" href="#post-upload"><span class="input000">Bạn đang nghĩ gì thế, {{$authInf->name}} ?</span></a>
             </div>
         </div>
     </div>
-    <div class="write-post-container" id="post-upload" style="display: none">
-        <div class="user-profile">
-            <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
-            <div>
-                <p>{{User::getUser()->name}}</p>
-                <select name="post_mode" id="post_mode">
-                    <option value="1">Công khai <i class="fa-solid fa-earth-asia"></i></option>
-                    <option value="2">Bạn bè <i class="fa-solid fa-user-group"></i></option>
-                    <option value="3">Chỉ mình tôi <i class="fa-solid fa-lock"></i></option>
-                </select>
+        <div class="write-post-container" id="post-upload" style="display: none">
+            <form action="{{route('client.createPost')}}" method="POST" enctype="multipart/form-data" id="nexus_timeline">
+                    @csrf
+            <div class="user-profile">
+                <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                <div>
+                    <p>{{$authInf->name}}</p>
+                    <select name="post_mode" id="post_mode">
+                        <option value="1">Công khai <i class="fa-solid fa-earth-asia"></i></option>
+                        <option value="2">Bạn bè <i class="fa-solid fa-user-group"></i></option>
+                        <option value="3">Chỉ mình tôi <i class="fa-solid fa-lock"></i></option>
+                    </select>
+                </div>
             </div>
-        </div>
-        <div class="post-upload-textarea">
-            <textarea name="content-text" placeholder="Bạn đang nghĩ gì, {{User::getUser()->name}} ?" id="" cols="30" rows="5"></textarea>
-            <div class="add-post-links">
-                <a href=""><img src="{{asset('storage/client/images/live-video.png')}}" alt="">Live Video</a>
-                <a href=""><img src="{{asset('storage/client/images/photo.png')}}" alt="">Photo/Video</a>
-                <a href=""><img src="{{asset('storage/client/images/feeling.png')}}" alt="">Feeling Activity</a>
-            </div>
-        </div>
-    </div>
+            <div class="post-upload-textarea">
+                <textarea name="content_text" placeholder="Bạn đang nghĩ gì, {{$authInf->name}} ?" id="" cols="30" rows="5"></textarea>
+                <div class="form-group">
+                    <div class="needsclick dropzone" id="document-dropzone">
 
+                    </div>
+                </div>
+                <div class="add-post-links">
+                    <a href=""><img src="{{asset('storage/client/images/live-video.png')}}" alt="">Live Video</a>
+                    <a href=""><img src="{{asset('storage/client/images/photo.png')}}" alt="">Photo/Video</a>
+                    <a href=""><img src="{{asset('storage/client/images/feeling.png')}}" alt="">Feeling Activity</a>
+                </div>
+            </div>
+                <button type="submit" class="btn-submit-post">Đăng</button>
+            </form>
+        </div>
     <div class="status-field-container write-post-container">
         <div class="user-profile-box">
             <div class="user-profile">
                 <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
                 <div>
-                    <p>{{User::getUser()->name}}</p>
+                    <p>{{$authInf->name}}</p>
                     <small>August 13 1999, 09.18 pm</small>
                 </div>
             </div>
@@ -149,4 +163,43 @@
         <p>Samona Rose</p>
     </div>
 </div>
+@endsection
+@section('script-bottom')
+        <script>
+            let uploadedDocumentMap = {}
+            Dropzone.options.documentDropzone={
+                url:'{{route('client.storeMedia')}}',
+                maxFilesize:25, //MB
+                addRemoveLinks:true,
+                headers:{
+                    'X-CSRF-TOKEN':"{{csrf_token()}}"
+                },
+                success: function (file, response) {
+                    $('form').append('<input type="hidden" name="document[]" value="' + response.name + '">')
+                    uploadedDocumentMap[file.name] = response.name
+                },
+                removedFile:function (file){
+                    file.previewElement.remove()
+                    let name = ''
+                    if(typeof file.file_name !=='undefined'){
+                        name = file.file_name
+                    }else{
+                        name = uploadedDocumentMap[file.name]
+                    }
+                    $('form').find('input[name="document[]"][value="'+ name + '"]').remove()
+                },
+                init:function (){
+                    @if(isset($project) && $project->document)
+                    let files =
+                        {!! json_encode($project->document) !!}
+                        for (let i in files) {
+                        let file = files[i]
+                        this.options.addedfile.call(this, file)
+                        file.previewElement.classList.add('dz-complete')
+                        $('form').append('<input type="hidden" name="document[]" value="' + file.file_name + '">')
+                    }
+                    @endif
+                }
+            }
+        </script>
 @endsection

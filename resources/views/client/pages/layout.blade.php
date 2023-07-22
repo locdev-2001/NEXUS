@@ -9,13 +9,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" href="{{asset('storage/client/images/logo/logo.svg')}}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modaal@0.4.4/dist/css/modaal.min.css" integrity="sha256-uXhoVqsazfMtamqLl8uOpYKcZ7bRUZWDmoLcPOpeApw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{asset('storage/client/css/index.css')}}">
 </head>
 
 <body>
+<?php
+use App\Helpers\UserHelpers;
+$userHelpers = new UserHelpers();
+$authInf = $userHelpers->getUser();
+$authId = $userHelpers->getId();
+?>
 <nav class="navbar">
     <div class="nav-left">
-        <img class="logo" src="{{asset('storage/client/images/logo/nav-logo.png')}}" alt="nav-logo">
+        <a href="/"><img class="logo" src="{{asset('storage/client/images/logo/nav-logo.png')}}" alt="nav-logo"></a>
         <ul class="navlogo">
             <li><i class="fa-solid fa-bell"></i></li>
             <li><i class="fa-solid fa-comment"></i></li>
@@ -37,8 +44,8 @@
             <div class="user-profile">
                 <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
                 <div>
-                    <p>{{User::getUser()->name}}</p>
-                    <a href="/profile?id={{User::getId()}}">Hồ sơ của bạn</a>
+                    <p>{{$authInf->name}}</p>
+                    <a href="/profile?id={{UserHelpers::getId()}}">Hồ sơ của bạn</a>
                 </div>
             </div>
             <div id="dark-button" onclick="darkModeON()">
@@ -103,11 +110,14 @@
     @yield('main-content')
 </div>
 <footer id="footer">
-    <p>&copy; Copyright 2021 - Socialbook All Rights Reserved</p>
+    <p> Copyright 2023 - NEXUS &copy;</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/modaal@0.4.4/dist/js/modaal.min.js" integrity="sha256-e8kfivdhut3LQd71YXKqOdkWAG1JKiOs2hqYJTe0uTk=" crossorigin="anonymous"></script>
-<script src="{{asset('storage/client/js/index.js')}}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js" integrity="sha512-3dZ9wIrMMij8rOH7X3kLfXAzwtcHpuYpEgQg1OA4QAob1e81H8ntUQmQm3pBudqIoySO5j0tHN4ENzA6+n2r4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="{{asset('storage/client/js/index.js')}}"></script>
+@yield('script-bottom')
 </body>
 </html>
