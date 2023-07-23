@@ -45,22 +45,23 @@ $authId = $userHelpers->getId();
                 <div>
                     <p>{{$authInf->name}}</p>
                     <select name="post_mode" id="post_mode">
-                        <option value="1">Công khai <i class="fa-solid fa-earth-asia"></i></option>
-                        <option value="2">Bạn bè <i class="fa-solid fa-user-group"></i></option>
-                        <option value="3">Chỉ mình tôi <i class="fa-solid fa-lock"></i></option>
+                        <option class="mode" value="1">Công khai &#xf57e</option>
+                        <option class="mode" value="2">Bạn bè &#xf500</option>
+                        <option class="mode" value="3">Chỉ mình tôi &#xf023</option>
                     </select>
                 </div>
             </div>
             <div class="post-upload-textarea">
-                <textarea name="content_text" placeholder="Bạn đang nghĩ gì, {{$authInf->name}} ?" id="" cols="30" rows="5"></textarea>
-                <div class="form-group">
+                <textarea name="content_text" placeholder="Bạn đang nghĩ gì, {{$authInf->name}} ?" id="content_text"></textarea>
+                <div class="form-group media-container">
                     <div class="needsclick dropzone" id="document-dropzone">
 
                     </div>
+                    <div id="gallery"></div>
                 </div>
                 <div class="add-post-links">
                     <a href=""><img src="{{asset('storage/client/images/live-video.png')}}" alt="">Live Video</a>
-                    <a href=""><img src="{{asset('storage/client/images/photo.png')}}" alt="">Photo/Video</a>
+                    <a href="" id="addMediaBtn"><img src="{{asset('storage/client/images/photo.png')}}" alt="">Photo/Video</a>
                     <a href=""><img src="{{asset('storage/client/images/feeling.png')}}" alt="">Feeling Activity</a>
                 </div>
             </div>
@@ -166,40 +167,74 @@ $authId = $userHelpers->getId();
 @endsection
 @section('script-bottom')
         <script>
+            let arrImg =[];
+            $('#gallery').imagesGrid({
+                images: arrImg,
+                align: true,
+                onGridRendered: function($grid) { },
+                getViewAllText: function(imagesCount) {
+                    return '+' + imagesCount;
+                }
+            });
             let uploadedDocumentMap = {}
             Dropzone.options.documentDropzone={
+                dictDefaultMessage: '<div class="drop-media-btn"><i class="fa-solid fa-square-plus"></i> '+ '<span>Thêm ảnh/video</span><p class="drag-n-drop">hoặc kéo và thả</p></div>',
+                dictFileUploaded: "Tải lên thành công!",
+                dictError: "Có lỗi xảy ra trong quá trình tải lên.",
+                dictRemoveFile:'<i class="fa-solid fa-trash"></i>',
+                addRemoveLinks:true,
                 url:'{{route('client.storeMedia')}}',
                 maxFilesize:25, //MB
-                addRemoveLinks:true,
                 headers:{
                     'X-CSRF-TOKEN':"{{csrf_token()}}"
                 },
                 success: function (file, response) {
                     $('form').append('<input type="hidden" name="document[]" value="' + response.name + '">')
                     uploadedDocumentMap[file.name] = response.name
+                    let imageUrl = response.name;//đường dẫn của hình ảnh sau khi upload
+                    arrImg.push('{{asset('storage')}}'+'/'+imageUrl);
+                    updateImagesGrid(arrImg);
                 },
-                removedFile:function (file){
+                removedfile:function (file) {
                     file.previewElement.remove()
                     let name = ''
-                    if(typeof file.file_name !=='undefined'){
+                    if (typeof file.file_name !== 'undefined') {
                         name = file.file_name
-                    }else{
+                    } else {
                         name = uploadedDocumentMap[file.name]
                     }
-                    $('form').find('input[name="document[]"][value="'+ name + '"]').remove()
+                    $('form').find('input[name="document[]"][value="' + name + '"]').remove()
+                    arrImg = arrImg.filter(function (image){
+                        return image !== '{{asset('storage')}}'+'/'+name;
+                    })
+                    updateImagesGrid(arrImg);
+                    $.ajax({
+                        url: '{{route('client.deleteMedia')}}',
+                        headers:{
+                            'X-CSRF-TOKEN':"{{csrf_token()}}"
+                        },
+                        type: 'POST',
+                        data: { media: name },
+                        success: function(response) {
+                            console.log('success remove',response)
+                        },
+                        error: function(error) {
+                            console.error(error)
+                        }
+                    });
                 },
-                init:function (){
-                    @if(isset($project) && $project->document)
-                    let files =
-                        {!! json_encode($project->document) !!}
-                        for (let i in files) {
-                        let file = files[i]
-                        this.options.addedfile.call(this, file)
-                        file.previewElement.classList.add('dz-complete')
-                        $('form').append('<input type="hidden" name="document[]" value="' + file.file_name + '">')
-                    }
-                    @endif
+                    init:function (){
+
                 }
+            }
+            function updateImagesGrid(arrImg){
+                $('#gallery').imagesGrid({
+                    images: arrImg,
+                    align:true,
+                    getViewAllText: function(imagesCount) {
+                        return '+' + imagesCount;
+                    }
+                })
             }
         </script>
 @endsection

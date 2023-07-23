@@ -24,6 +24,7 @@ Route::group(['middleware'=>'login'],function (){
     Route::group(['prefix'=>'/post'],function (){
         Route::post('/create',[PostController::class,'createPost'])->name('client.createPost');
         Route::post('/media/store',[MediaController::class,'storeMedia'])->name('client.storeMedia');
+        Route::post('media/delete',[MediaController::class,'deleteMedia'])->name('client.deleteMedia');
     });
 });
 //dang nhap bang facebook

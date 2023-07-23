@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 class MediaController extends Controller
@@ -22,5 +23,15 @@ class MediaController extends Controller
             'name' => $filePath,
             'original_name' => $file->getClientOriginalName(),
         ]);
+    }
+    public function deleteMedia(Request $request){
+        $media = $request->input('media');
+        if(File::exists(public_path('storage/'.$media))){
+            File::delete(public_path('storage/'.$media));
+            return response()->json(['message'=>'removed']);
+        }
+        else{
+            return response()->json(['error'=>'media not found']);
+        }
     }
 }
