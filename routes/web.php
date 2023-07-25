@@ -20,7 +20,10 @@ use Illuminate\Support\Facades\Route;
 Route::group(['middleware'=>'login'],function (){
     Route::any('/', [HomeController::class,'index'])->name('client.home');
     Route::get('/logout', [AuthController::class, 'logout'])->name('client.logout');
-    Route::any('/profile',[ProfileController::class,'index'])->name('client.profile');
+    Route::group(['prefix'=>'/profile'],function(){
+        Route::any('',[ProfileController::class,'index'])->name('client.profile');
+        Route::any('/search',[ProfileController::class,'searchAjax'])->name('client.profile.searchAjax');
+    });
     Route::group(['prefix'=>'/post'],function (){
         Route::post('/create',[PostController::class,'createPost'])->name('client.createPost');
         Route::post('/media/store',[MediaController::class,'storeMedia'])->name('client.storeMedia');

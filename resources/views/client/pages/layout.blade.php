@@ -5,12 +5,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Nexus</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" href="{{asset('storage/client/images/logo/logo.svg')}}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modaal@0.4.4/dist/css/modaal.min.css" integrity="sha256-uXhoVqsazfMtamqLl8uOpYKcZ7bRUZWDmoLcPOpeApw=" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.css">
+    <link rel="stylesheet" href="{{ asset('css/helvetica.css') }}">hp
     <link rel="stylesheet" href="{{asset('storage/client/css/index.css')}}">
 </head>
 
@@ -31,9 +33,15 @@ $authId = $userHelpers->getId();
         </ul>
     </div>
     <div class="nav-right">
+        <div class="search">
         <div class="search-box">
             <img src="{{asset('storage/client/images/search.png')}}" alt="">
-            <input type="text" placeholder="Search">
+            <input type="text" placeholder="Search" name="search_profile" id="search_profile">
+        </div>
+        <div class="results-container">
+            <div class="results hide">
+            </div>
+        </div>
         </div>
         <div class="profile-image online" onclick="UserSettingToggle()">
             <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
