@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\client\AuthController;
+use App\Http\Controllers\client\FriendController;
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\MediaController;
 use App\Http\Controllers\client\PostController;
@@ -24,11 +25,14 @@ Route::group(['middleware'=>'login'],function (){
         Route::any('',[ProfileController::class,'index'])->name('client.profile');
         Route::any('/search',[ProfileController::class,'searchAjax'])->name('client.profile.searchAjax');
     });
+    Route::post('/send-friend-request',[FriendController::class,'sendRequest'])->name('client.friend.sendRequest');
     Route::group(['prefix'=>'/post'],function (){
         Route::post('/create',[PostController::class,'createPost'])->name('client.createPost');
         Route::post('/media/store',[MediaController::class,'storeMedia'])->name('client.storeMedia');
         Route::post('media/delete',[MediaController::class,'deleteMedia'])->name('client.deleteMedia');
     });
+    Route::any('/accept-friend-request',[FriendController::class,'accept'])->name('client.accept.friend.request');
+    Route::any('/reject-friend-request',[FriendController::class,'reject'])->name('client.reject.friend.request');
 });
 //dang nhap bang facebook
 Route::group(['prefix'=>'auth/facebook'], function (){

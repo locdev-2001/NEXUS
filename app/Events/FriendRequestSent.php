@@ -10,18 +10,18 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FriendRequestSent
+class FriendRequestSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $senderId;
     public $recipientId;
-
+    public $senderId;
     /**
      * Create a new event instance.
      * @param int $senderId
      * @param int $recipientId
+     *
      */
-    public function __construct($senderId, $recipientId)
+    public function __construct($senderId,$recipientId)
     {
         $this->senderId = $senderId;
         $this->recipientId = $recipientId;
@@ -34,7 +34,7 @@ class FriendRequestSent
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('NEXUS-development');
+        return new Channel('friend-request.'.$this->recipientId);
     }
     public function broadcastAs()
     {

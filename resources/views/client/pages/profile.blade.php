@@ -18,8 +18,27 @@
         </div>
         <div class="right-dashboard-info">
             <div class="right-dashboard-info-top">
+                <?php
+                    $friendRequest = UserHelpers::getFriendRequest($user->id);
+                ?>
                 @if(UserHelpers::getId() !== $user->id)
-                    <button type="button" id="sendFriendRequest"><i class="fas fa-user-plus"></i>Thêm bạn</button>
+                    @if($friendRequest)
+                       <?php
+                            $senderId = $friendRequest['sender_id'] ?? null;
+                        ?>
+                        @if($senderId)
+                            @if($senderId === auth()->id())
+                            <button class="pending" type="button" id="pendingBtn" data-user_id ="{{$user->id}}">&#xf00c Đã gửi lời mời kết bạn</button>
+                            @else
+                                <button id="acceptBtn">Chấp nhận</button>
+                                <button id="rejectBtn">Từ chối</button>
+                            @endif
+                        @else
+                            <button type="button" id="sendFriendRequest" data-user_id="{{$user->id}}" data-status="1"><i class="fas fa-user-plus"></i>Thêm bạn</button>
+                        @endif
+                    @else
+                    <button type="button" id="sendFriendRequest" data-user_id="{{$user->id}}" data-status="1"><i class="fas fa-user-plus"></i>Thêm bạn</button>
+                    @endif
                     <button type="button"><i class="far fa-envelope"></i> Nhắn tin</button>
                 @else
                     <button type="button"><i class="fa-solid fa-plus"></i> Thêm vào tin</button>
