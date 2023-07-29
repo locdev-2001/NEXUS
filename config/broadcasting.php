@@ -58,7 +58,10 @@ return [
         'null' => [
             'driver' => 'null',
         ],
-
+        'database' => [
+            'driver' => 'database',
+            'table' => 'notifications', // Đặt tên bảng bạn muốn sử dụng
+        ]
     ],
 
 ];

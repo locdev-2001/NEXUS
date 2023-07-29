@@ -5,12 +5,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Nexus</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" href="{{asset('storage/client/images/logo/logo.svg')}}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modaal@0.4.4/dist/css/modaal.min.css" integrity="sha256-uXhoVqsazfMtamqLl8uOpYKcZ7bRUZWDmoLcPOpeApw=" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.css">
+    <link rel="stylesheet" href="{{ asset('css/helvetica.css') }}">
     <link rel="stylesheet" href="{{asset('storage/client/css/index.css')}}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 </head>
 
 <body>
@@ -19,20 +24,48 @@ use App\Helpers\UserHelpers;
 $userHelpers = new UserHelpers();
 $authInf = $userHelpers->getUser();
 $authId = $userHelpers->getId();
+$notifications = $userHelpers->getNotifications();
 ?>
 <nav class="navbar">
     <div class="nav-left">
         <a href="/"><img class="logo" src="{{asset('storage/client/images/logo/nav-logo.png')}}" alt="nav-logo"></a>
         <ul class="navlogo">
-            <li><i class="fa-solid fa-bell"></i></li>
+            <a href="/"><li><i class="fa-solid fa-house-chimney"></i></li></a>
+            <li class="notify" id="notify"><i class="fa-solid fa-bell"></i></li>
+            <div class="user-notification" id="user-notification">
+                @if(count($notifications) >0)
+                    @foreach($notifications as $notification)
+                        <div class="notification">
+                            <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                            <div class="notifications-message">
+                            <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
+                            <a href="{{ json_decode($notification->data)->action_url }}" class="btn btn-primary accept-btn">{{ json_decode($notification->data)->action_text }}</a>
+                            <!-- Hiển thị nút từ chối -->
+                            <a href="{{ json_decode($notification->data)->reject_url}}" class="btn btn-danger reject-btn">{{ json_decode($notification->data)->reject_text }}</a>
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="notification">
+                        <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                        <p>Chưa có thông báo</p>
+                    </div>
+                @endif
+            </div>
             <li><i class="fa-solid fa-comment"></i></li>
             <li><i class="fa-solid fa-bars"></i></li>
         </ul>
     </div>
     <div class="nav-right">
+        <div class="search">
         <div class="search-box">
             <img src="{{asset('storage/client/images/search.png')}}" alt="">
-            <input type="text" placeholder="Search">
+            <input type="text" placeholder="Search" name="search_profile" id="search_profile">
+        </div>
+        <div class="results-container">
+            <div class="results hide">
+            </div>
+        </div>
         </div>
         <div class="profile-image online" onclick="UserSettingToggle()">
             <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
@@ -45,6 +78,7 @@ $authId = $userHelpers->getId();
                 <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
                 <div>
                     <p>{{$authInf->name}}</p>
+                    <input type="hidden" id="user-id_hidden" data-user_id="{{$authId}}">
                     <a href="/profile?id={{UserHelpers::getId()}}">Hồ sơ của bạn</a>
                 </div>
             </div>
@@ -112,12 +146,13 @@ $authId = $userHelpers->getId();
 <footer id="footer">
     <p> Copyright 2023 - NEXUS &copy;</p>
 </footer>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/npm/modaal@0.4.4/dist/js/modaal.min.js" integrity="sha256-e8kfivdhut3LQd71YXKqOdkWAG1JKiOs2hqYJTe0uTk=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js" integrity="sha512-3dZ9wIrMMij8rOH7X3kLfXAzwtcHpuYpEgQg1OA4QAob1e81H8ntUQmQm3pBudqIoySO5j0tHN4ENzA6+n2r4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.js"></script>
 <script src="{{asset('storage/client/js/index.js')}}"></script>
+<script src="{{asset('storage/client/js/pusher.js')}}"></script>
 @yield('script-bottom')
 </body>
 </html>

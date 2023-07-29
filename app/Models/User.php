@@ -10,7 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasTimestamps;
+    use HasApiTokens, HasFactory, HasTimestamps;
     protected $table = 'tgz_users';
     /**
      * The attributes that are mass assignable.
@@ -57,5 +57,15 @@ class User extends Authenticatable
     }
     public function media(){
         return $this->hasMany(Media::class);
+    }
+    /**
+     * Get the notification routing information for the database driver.
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return array
+     */
+    public function routeNotificationForDatabase($notification)
+    {
+        return array(['id' => $this->id]);
     }
 }
