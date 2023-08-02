@@ -27,6 +27,7 @@ $authId = $userHelpers->getId();
 $notifications = $userHelpers->getNotifications();
 ?>
 <nav class="navbar">
+
     <div class="nav-left">
         <a href="/"><img class="logo" src="{{asset('storage/client/images/logo/nav-logo.png')}}" alt="nav-logo"></a>
         <ul class="navlogo">
@@ -35,19 +36,21 @@ $notifications = $userHelpers->getNotifications();
             <div class="user-notification" id="user-notification">
                 @if(count($notifications) >0)
                     @foreach($notifications as $notification)
-                        <div class="notification">
+                        <div class="notification" id="n-{{$notification->id}}">
                             <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
                             <div class="notifications-message">
                             <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
-                            <a href="{{ json_decode($notification->data)->action_url }}" class="btn btn-primary accept-btn">{{ json_decode($notification->data)->action_text }}</a>
-                            <!-- Hiển thị nút từ chối -->
-                            <a href="{{ json_decode($notification->data)->reject_url}}" class="btn btn-danger reject-btn">{{ json_decode($notification->data)->reject_text }}</a>
+                                @if(isset(json_decode($notification->data)->action_url))
+                                <a href="{{ json_decode($notification->data)->action_url }}" class="btn btn-primary accept-btn">{{ json_decode($notification->data)->action_text }}</a>
+                                @endif
+                                @if(isset(json_decode($notification->data)->reject_url))
+                                <a href="{{ json_decode($notification->data)->reject_url}}" class="btn btn-danger reject-btn">{{ json_decode($notification->data)->reject_text }}</a>
+                                @endif
                             </div>
                         </div>
                     @endforeach
                 @else
                     <div class="notification">
-                        <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
                         <p>Chưa có thông báo</p>
                     </div>
                 @endif
@@ -151,8 +154,8 @@ $notifications = $userHelpers->getNotifications();
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js" integrity="sha512-3dZ9wIrMMij8rOH7X3kLfXAzwtcHpuYpEgQg1OA4QAob1e81H8ntUQmQm3pBudqIoySO5j0tHN4ENzA6+n2r4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.js"></script>
-<script src="{{asset('storage/client/js/index.js')}}"></script>
 <script src="{{asset('storage/client/js/pusher.js')}}"></script>
+<script src="{{asset('storage/client/js/index.js')}}"></script>
 @yield('script-bottom')
 </body>
 </html>

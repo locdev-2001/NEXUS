@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 use App\Models\FriendRequests;
+use App\Models\Friends;
 use App\Models\Notification;
 use Illuminate\Support\Facades\Auth;
 
@@ -27,5 +28,19 @@ class UserHelpers{
             $query->where('sender_id', $recipientId)
                 ->where('recipient_id', $senderId);
         })->first();
+    }
+    public function isFriend($userId){
+        $myId = Auth::id();
+        $friendRelationship = Friends::where(function($query) use ($myId,$userId){
+            $query->where('user_id',$userId)->where('friend_id',$myId);// kiểm tra xem tôi có kết bạn với người này chưa
+        })->orWhere(function($query) use ($myId,$userId){
+            $query->where('user_id',$myId)->where('friend_id',$userId);//kiểm tra xem người này đã kết bạn với tôi chưa
+        })->first();
+        if ($friendRelationship){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

@@ -36,14 +36,7 @@ class SendFriendRequestNotification implements ShouldQueue
 
         $sender = User::findOrFail($event->senderId);
 //        dd(is_array($sender),$sender);
-        $data = [
-            'senderId'=>$event->senderId,
-            'message'=>$sender->name.' đã gửi cho bạn lời mời kết bạn',
-            'action_text'=>'Chấp nhận',
-            'action_url'=>route('client.accept.friend.request',['senderId'=>$event->senderId]),
-            'reject_text'=>'Từ chối',
-            'reject_url'=>route('client.reject.friend.request',['senderId'=>$event->senderId])
-        ];
+        $data = $event->data;
         if ($recipient){
 //            \Illuminate\Support\Facades\Notification::send($recipient, new FriendRequestNotification($data));
 //            $recipient->notify(new InvoicePaid($event));
