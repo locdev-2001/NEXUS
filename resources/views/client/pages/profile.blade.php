@@ -19,7 +19,9 @@
         <div class="right-dashboard-info">
             <div class="right-dashboard-info-top">
                 <?php
-                    $friendRequest = UserHelpers::getFriendRequest($user->id);
+                use App\Helpers\UserHelpers;
+                $friendRequest = UserHelpers::getFriendRequest($user->id);
+                    $isFriend = UserHelpers::isFriend($user->id);
                 ?>
                 @if(UserHelpers::getId() !== $user->id)
                     @if($friendRequest)
@@ -36,7 +38,10 @@
                         @else
                             <button type="button" id="sendFriendRequest" data-user_id="{{$user->id}}" data-status="1"><i class="fas fa-user-plus"></i>Thêm bạn</button>
                         @endif
-                    @else
+
+                        @elseif($isFriend === true)
+                            <button id="friend-accepted"><i class="fa-solid fa-check"></i> Bạn bè</button>
+                        @else
                     <button type="button" id="sendFriendRequest" data-user_id="{{$user->id}}" data-status="1"><i class="fas fa-user-plus"></i>Thêm bạn</button>
                     @endif
                     <button type="button"><i class="far fa-envelope"></i> Nhắn tin</button>

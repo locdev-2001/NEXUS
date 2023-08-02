@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -11,7 +10,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FriendRequestSent implements ShouldBroadcast
+class AcceptFriendRequest implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $recipientId;
@@ -19,9 +18,8 @@ class FriendRequestSent implements ShouldBroadcast
     public $data;
     /**
      * Create a new event instance.
-     * @param int $senderId
-     * @param int $recipientId
      *
+     * @return void
      */
     public function __construct($senderId,$recipientId,$data)
     {
@@ -37,10 +35,10 @@ class FriendRequestSent implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new Channel('friend-request.'.$this->recipientId);
+        return new Channel('accepted-friend-request.'.$this->recipientId);
     }
     public function broadcastAs()
     {
-        return 'friend-request-sent';
+        return 'accepted-friend-request';
     }
 }
