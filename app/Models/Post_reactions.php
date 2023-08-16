@@ -20,6 +20,7 @@ class Post_reactions extends Model
         'post_id',
         'reaction_type',
         'created_at',
+        'updated_at'
     ];
     public function user(){
         return $this->belongsTo(User::class);

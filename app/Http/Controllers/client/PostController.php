@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Posts;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,6 +26,7 @@ class PostController extends Controller
             Media::create($prs);
         }
         $this->_data['post']=$post;
+        $this->_data['post_user_name'] = User::findOrFail($post->user_id)->name;
         $this->_data['media'] = Media::where('post_id',$post->id)->get();
         return response()->json([
             'd'=>$this->_data,

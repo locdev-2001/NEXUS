@@ -28,12 +28,12 @@ class Posts extends Model
     }
     public function comments()
     {
-        return $this->hasMany(Post_comments::class);
+        return $this->hasMany(Post_comments::class,'post_id')->orderBy('created_at','desc');
     }
     public function reactions(){
-        return $this->hasMany(Post_reactions::class);
+        return $this->hasMany(Post_reactions::class,'post_id');
     }
     public function media(){
-        return $this->hasMany(Media::class);
+        return $this->hasMany(Media::class, 'post_id');
     }
 }

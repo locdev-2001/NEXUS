@@ -19,6 +19,7 @@ class Profile extends Model
         'user_id',
         'bio',
         'avatar',
+        'cover',
         'created_at',
         'updated_at'
     ];

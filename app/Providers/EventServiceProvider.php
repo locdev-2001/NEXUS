@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Events\AcceptFriendRequest;
 use App\Events\FriendRequestSent;
+use App\Events\ReactionPost;
 use App\Listeners\SendFriendRequestNotification;
 use App\Listeners\sendNotificationAcceptFriendRequest;
+use App\Listeners\sendReactionPost;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +29,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         AcceptFriendRequest::class=>[
             sendNotificationAcceptFriendRequest::class
+        ],
+        ReactionPost::class=>[
+            sendReactionPost::class
         ]
     ];
 
