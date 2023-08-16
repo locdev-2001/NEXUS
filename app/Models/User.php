@@ -58,6 +58,9 @@ class User extends Authenticatable
     public function media(){
         return $this->hasMany(Media::class);
     }
+    public function comments(){
+        return $this->hasMany(Post_comments::class);
+    }
     /**
      * Get the notification routing information for the database driver.
      *

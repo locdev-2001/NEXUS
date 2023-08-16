@@ -18,6 +18,8 @@ class Post_comments extends Model
         'user_id',
         'post_id',
         'content',
+        'comment_media_dir',
+        'parent_id',
         'lft',
         'rgt',
         'created_at',
@@ -25,7 +27,7 @@ class Post_comments extends Model
     ];
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
     public function post()
     {
@@ -33,6 +35,6 @@ class Post_comments extends Model
     }
     public function replies()
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->hasMany(Post_comments::class, 'parent_id');
     }
 }

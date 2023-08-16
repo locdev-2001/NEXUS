@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Models\FriendRequests;
 use App\Models\Friends;
 use App\Models\Notification;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class UserHelpers{
@@ -15,7 +16,12 @@ class UserHelpers{
     }
     public function getNotifications(){
         $userId = Auth::id();
-        $notifications = Notification::where('recipient_id',$userId)->get();
+        $notifications = Notification::where('recipient_id',$userId)->orderBy('created_at','desc')->get();
+//        $notifications->map(function ($n){
+//            $n->created_at = $this->getTimeAgoAtrr($n->created_at);
+//            $n->updated_at = $this->getTimeAgoAtrr($n->updated_at);
+//            return $n;
+//        });
         return $notifications;
     }
     public function getFriendRequest($recipientId){
@@ -41,6 +47,26 @@ class UserHelpers{
         }
         else{
             return false;
+        }
+    }
+    public function getTimeAgoAtrr($t){
+        $created_at = Carbon::parse($t);
+        $now = Carbon::now();
+        $diff = $created_at->diff($now);
+        if ($diff->days >= 3) {
+            return $created_at->format('d \t\h\á\n\g m \n\ă\m Y');
+        }
+        elseif ($diff->days >= 1) {
+            return $diff->days . ' ngày trước';
+        }
+        elseif ($diff->h >=1) {
+            return $diff->format('%h giờ trước');
+        }
+        elseif($diff->i >=1){
+            return $diff->i .' phút trước';
+        }
+        else{
+            return 'Vừa xong';
         }
     }
 }

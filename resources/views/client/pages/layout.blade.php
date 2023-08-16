@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/modaal@0.4.4/dist/css/modaal.min.css" integrity="sha256-uXhoVqsazfMtamqLl8uOpYKcZ7bRUZWDmoLcPOpeApw=" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('css/helvetica.css') }}">
     <link rel="stylesheet" href="{{asset('storage/client/css/index.css')}}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -34,10 +35,21 @@ $notifications = $userHelpers->getNotifications();
             <a href="/"><li><i class="fa-solid fa-house-chimney"></i></li></a>
             <li class="notify" id="notify"><i class="fa-solid fa-bell"></i></li>
             <div class="user-notification" id="user-notification">
+                <div class="notifications-header">
+                    <div class="wrapper-header">
+                        <h1 class="header">Thông báo</h1>
+                    </div>
+                    <div class="notification-actions">
+                        <span><i class="fa-solid fa-ellipsis"></i></span>
+                    </div>
+                </div>
                 @if(count($notifications) >0)
                     @foreach($notifications as $notification)
                         <div class="notification" id="n-{{$notification->id}}">
-                            <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                            @if(json_decode($notification->type == 1 || $notification->type == 2))
+                                <div class="avatar-container">
+                                    <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                                </div>
                             <div class="notifications-message">
                             <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
                                 @if(isset(json_decode($notification->data)->action_url))
@@ -46,11 +58,38 @@ $notifications = $userHelpers->getNotifications();
                                 @if(isset(json_decode($notification->data)->reject_url))
                                 <a href="{{ json_decode($notification->data)->reject_url}}" class="btn btn-danger reject-btn">{{ json_decode($notification->data)->reject_text }}</a>
                                 @endif
+                                <div class="notifications-time">
+                                    <span>{{$userHelpers->getTimeAgoAtrr($notification->created_at)}}</span>
+                                </div>
                             </div>
+                            @elseif(json_decode($notification->type == 3))
+                                <div class="avatar-container">
+                                <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                                @if(json_decode($notification->data)->reaction_type == 1)
+                                <img src="{{asset('storage/client/images/emoji/like.svg')}}" class="emoji" alt="like">
+                                @elseif(json_decode($notification->data)->reaction_type == 2)
+                                <img src="{{asset('storage/client/images/emoji/love.svg')}}" class="emoji" alt="love">
+                                @elseif(json_decode($notification->data)->reaction_type == 3)
+                                <img src="{{asset('storage/client/images/emoji/haha.svg')}}" class="emoji" alt="haha">
+                                @elseif(json_decode($notification->data)->reaction_type == 4)
+                                <img src="{{asset('storage/client/images/emoji/wow.svg')}}" class="emoji" alt="wow">
+                                @elseif(json_decode($notification->data)->reaction_type == 5)
+                                <img src="{{asset('storage/client/images/emoji/sad.svg')}}" class="emoji" alt="sad">
+                                @else
+                                <img src="{{asset('storage/client/images/emoji/angry.svg')}}" class="emoji" alt="angry">
+                                @endif
+                                </div>
+                                <div class="notifications-message">
+                                    <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
+                                    <div class="notifications-time">
+                                        <span>{{$userHelpers->getTimeAgoAtrr($notification->created_at)}}</span>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 @else
-                    <div class="notification">
+                    <div class="notification" id="no-notifications">
                         <p>Chưa có thông báo</p>
                     </div>
                 @endif
@@ -123,7 +162,7 @@ $notifications = $userHelpers->getNotifications();
 
 <!-- content-area------------ -->
 
-<div class="container">
+<div class="container-custom">
     <div class="left-sidebar">
         <div class="important-links">
             <a href="/"><img src="{{asset('storage/client/images/news.png')}}" alt="">Bảng tin</a>
@@ -154,6 +193,7 @@ $notifications = $userHelpers->getNotifications();
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.min.js" integrity="sha512-3dZ9wIrMMij8rOH7X3kLfXAzwtcHpuYpEgQg1OA4QAob1e81H8ntUQmQm3pBudqIoySO5j0tHN4ENzA6+n2r4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.js" integrity="sha512-U2WE1ktpMTuRBPoCFDzomoIorbOyUv0sP8B+INA3EzNAhehbzED1rOJg6bCqPf/Tuposxb5ja/MAUnC8THSbLQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js" integrity="sha512-r2yd2GP87iHAsf2K+ARvu01VtR7Bs04la0geDLbFlB/38AruUbA5qfmtXwXx6FZBQGJRogiPtEqtfk/fnQfaYA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{asset('storage/client/js/pusher.js')}}"></script>
 <script src="{{asset('storage/client/js/index.js')}}"></script>
 @yield('script-bottom')
