@@ -36,4 +36,7 @@ class Posts extends Model
     public function media(){
         return $this->hasMany(Media::class, 'post_id');
     }
+    public function commentReaction(){
+        return $this->hasMany(Comment_reaction::class);
+    }
 }

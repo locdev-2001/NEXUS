@@ -3,11 +3,17 @@
 namespace App\Providers;
 
 use App\Events\AcceptFriendRequest;
+use App\Events\Comment;
 use App\Events\FriendRequestSent;
+use App\Events\ReactionComment;
 use App\Events\ReactionPost;
+use App\Events\Reply;
+use App\Listeners\SendCommentNotification;
 use App\Listeners\SendFriendRequestNotification;
 use App\Listeners\sendNotificationAcceptFriendRequest;
+use App\Listeners\SendReactionCommentNotification;
 use App\Listeners\sendReactionPost;
+use App\Listeners\SendReplyNotification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -32,6 +38,15 @@ class EventServiceProvider extends ServiceProvider
         ],
         ReactionPost::class=>[
             sendReactionPost::class
+        ],
+        Comment::class=>[
+            SendCommentNotification::class
+        ],
+        Reply::class=>[
+            SendReplyNotification::class
+        ],
+        ReactionComment::class=>[
+            SendReactionCommentNotification::class
         ]
     ];
 

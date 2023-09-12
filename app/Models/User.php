@@ -71,4 +71,7 @@ class User extends Authenticatable
     {
         return array(['id' => $this->id]);
     }
+    public function isAdmin(){
+        return $this->role === 1;
+    }
 }

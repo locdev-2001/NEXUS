@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -55,10 +56,15 @@ class AuthController extends Controller
                 'passwordConfirmation.required'=>'Vui lòng xác nhận lại mật khẩu',
                 'passwordConfirmation.same'=>'Mật khẩu xác nhận không trùng với mật khẩu đã nhập'
             ]);
-            User::create([
+            $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
+            ]);
+            Profile::create([
+               'user_id'=>$user->id,
+                'avatar'=>'/storage/client/images/profile-pic.jpg',
+                'cover'=>'storage/client/images/cover.jpg'
             ]);
             return redirect('/login');
         }

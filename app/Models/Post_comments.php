@@ -37,4 +37,7 @@ class Post_comments extends Model
     {
         return $this->hasMany(Post_comments::class, 'parent_id');
     }
+    public function commentReaction(){
+        return $this->hasMany(Comment_reaction::class,'comment_id');
+    }
 }

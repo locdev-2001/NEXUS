@@ -36,6 +36,7 @@ class sendReactionPost implements ShouldQueue
                 'recipient_id'=>$event->recipient_id,
                 'post_id'=>$event->post_id,
                 'data'=>json_encode($data),
+                'hyper_link'=>'/post?id='.$event->post_id,
                 'type'=>3 // reaction
             ]);
         }

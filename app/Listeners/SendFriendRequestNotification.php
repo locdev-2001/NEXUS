@@ -43,6 +43,7 @@ class SendFriendRequestNotification implements ShouldQueue
             Notification::create([
                 'sender_id'=>$sender->id,
                 'recipient_id'=>$recipient->id,
+                'hyper_link'=>'/profile?id='.$sender->id,
                 'data'=>json_encode($data),
                 'type'=>1,// friend request
             ]);
