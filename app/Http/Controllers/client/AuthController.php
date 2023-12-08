@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\client;
 
 use App\Http\Controllers\Controller;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,11 +24,17 @@ class AuthController extends Controller
                'email.email'=>'Địa chỉ email không đúng định dạng',
                'password.required'=>'Vui lòng nhập mật khẩu'
            ]);
-           if(Auth::attempt($credentials)){
-               return redirect()->intended('/');
+           $user = User::where('email',$credentials['email'])->first();
+           if($user && $user->active == 1){
+               if(Auth::attempt($credentials)){
+                   return redirect()->intended('/');
+               }
+               else{
+                   return redirect()->back()->withErrors(['errorLogin'=>'Sai địa chỉ Email hoặc mật khẩu']);
+               }
            }
            else{
-               return redirect()->back()->withErrors(['errorLogin'=>'Sai địa chỉ Email hoặc mật khẩu']);
+               return redirect()->back()->withErrors(['errorLogin'=>'Tài khoản đã bị khóa vui lòng kiểm tra email để biết thêm chi tiết']);
            }
         }
         return view('client.login');
@@ -55,10 +62,15 @@ class AuthController extends Controller
                 'passwordConfirmation.required'=>'Vui lòng xác nhận lại mật khẩu',
                 'passwordConfirmation.same'=>'Mật khẩu xác nhận không trùng với mật khẩu đã nhập'
             ]);
-            User::create([
+            $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => bcrypt($data['password']),
+            ]);
+            Profile::create([
+               'user_id'=>$user->id,
+                'avatar'=>'/storage/client/images/profile-pic.jpg',
+                'cover'=>'storage/client/images/cover.jpg'
             ]);
             return redirect('/login');
         }

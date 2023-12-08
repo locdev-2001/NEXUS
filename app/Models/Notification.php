@@ -16,6 +16,7 @@ class Notification extends Model
         'post_id',
         'data',
         'type',
+        'hyper_link',
         'is_read'
     ];
     public function user()

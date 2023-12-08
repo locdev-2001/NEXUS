@@ -13,10 +13,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.min.css" integrity="sha512-jU/7UFiaW5UBGODEopEqnbIAHOI8fO6T99m7Tsmqs2gkdujByJfkCbbfPSN4Wlqlb9TGnsuC0YgUgWkRBK7B9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.1/css/bootstrap.min.css" integrity="sha512-Z/def5z5u2aR89OuzYcxmDJ0Bnd5V1cKqBEbvLOiUNWdg9PQeXVvXLI90SE4QOHGlfLqUnDNVAYyZi8UwUTmWQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://unpkg.com/cropperjs/dist/cropper.css" rel="stylesheet"/>
     <link rel="stylesheet" href="{{ asset('css/helvetica.css') }}">
     <link rel="stylesheet" href="{{asset('storage/client/css/index.css')}}">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.css" integrity="sha512-wJgJNTBBkLit7ymC6vvzM1EcSWeM9mmOu+1USHaRBbHkm6W9EgM0HY27+UtUaprntaYQJF75rc8gjxllKs5OIQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-toast-plugin/1.3.2/jquery.toast.min.js" integrity="sha512-zlWWyZq71UMApAjih4WkaRpikgY9Bz1oXIW5G0fED4vk14JjGlQ1UmkGM392jEULP8jbNMiwLWdM8Z87Hu88Fw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    @livewireStyles
 </head>
 
 <body>
@@ -25,10 +29,11 @@ use App\Helpers\UserHelpers;
 $userHelpers = new UserHelpers();
 $authInf = $userHelpers->getUser();
 $authId = $userHelpers->getId();
+$authProfile = $userHelpers->getProfile();
 $notifications = $userHelpers->getNotifications();
 ?>
+<input type="hidden" id="avatar-hidden" value="{{$authProfile->avatar}}">
 <nav class="navbar">
-
     <div class="nav-left">
         <a href="/"><img class="logo" src="{{asset('storage/client/images/logo/nav-logo.png')}}" alt="nav-logo"></a>
         <ul class="navlogo">
@@ -45,26 +50,27 @@ $notifications = $userHelpers->getNotifications();
                 </div>
                 @if(count($notifications) >0)
                     @foreach($notifications as $notification)
+                        <a class="hyper_link" href="{{url($notification->hyper_link)}}">
                         <div class="notification" id="n-{{$notification->id}}">
                             @if(json_decode($notification->type == 1 || $notification->type == 2))
-                                <div class="avatar-container">
-                                    <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
-                                </div>
-                            <div class="notifications-message">
-                            <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
-                                @if(isset(json_decode($notification->data)->action_url))
-                                <a href="{{ json_decode($notification->data)->action_url }}" class="btn btn-primary accept-btn">{{ json_decode($notification->data)->action_text }}</a>
-                                @endif
-                                @if(isset(json_decode($notification->data)->reject_url))
-                                <a href="{{ json_decode($notification->data)->reject_url}}" class="btn btn-danger reject-btn">{{ json_decode($notification->data)->reject_text }}</a>
-                                @endif
-                                <div class="notifications-time">
-                                    <span>{{$userHelpers->getTimeAgoAtrr($notification->created_at)}}</span>
-                                </div>
-                            </div>
+                                    <div class="avatar-container">
+                                        <img class="avatar" src="{{asset(json_decode($notification->data)->avatar)}}" alt="">
+                                    </div>
+                                    <div class="notifications-message">
+                                        <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
+                                        @if(isset(json_decode($notification->data)->action_url))
+                                        <a href="{{ json_decode($notification->data)->action_url }}" class="btn btn-primary accept-btn">{{ json_decode($notification->data)->action_text }}</a>
+                                        @endif
+                                        @if(isset(json_decode($notification->data)->reject_url))
+                                        <a href="{{ json_decode($notification->data)->reject_url}}" class="btn btn-danger reject-btn">{{ json_decode($notification->data)->reject_text }}</a>
+                                        @endif
+                                        <div class="notifications-time">
+                                            <span>{{$userHelpers->getTimeAgoAtrr($notification->created_at)}}</span>
+                                        </div>
+                                    </div>
                             @elseif(json_decode($notification->type == 3))
                                 <div class="avatar-container">
-                                <img class="avatar" src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                                <img class="avatar" src="{{asset(json_decode($notification->data)->avatar)}}" alt="">
                                 @if(json_decode($notification->data)->reaction_type == 1)
                                 <img src="{{asset('storage/client/images/emoji/like.svg')}}" class="emoji" alt="like">
                                 @elseif(json_decode($notification->data)->reaction_type == 2)
@@ -85,8 +91,31 @@ $notifications = $userHelpers->getNotifications();
                                         <span>{{$userHelpers->getTimeAgoAtrr($notification->created_at)}}</span>
                                     </div>
                                 </div>
+                                @elseif(json_decode($notification->type >3 && $notification->type <=5 ))
+                                    <div class="avatar-container">
+                                        <img src="{{asset(json_decode($notification->data)->avatar)}}" alt="" class="avatar">
+                                        <img src="{{asset('storage/client/images/icons/message.svg')}}" alt="comment" class="comment">
+                                    </div>
+                                    <div class="notifications-message">
+                                        <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
+                                        <div class="notifications-time">
+                                            <span>{{$userHelpers->getTimeAgoAtrr($notification->created_at)}}</span>
+                                        </div>
+                                    </div>
+                                @else
+                                <div class="avatar-container">
+                                    <img src="{{asset(json_decode($notification->data)->avatar)}}" alt="" class="avatar">
+                                    <img src="{{asset('storage/client/images/emoji/like.svg')}}" alt="emoji" class="emoji">
+                                </div>
+                                <div class="notifications-message">
+                                    <p class="message" id="message">{{json_decode($notification->data)->message}}</p>
+                                    <div class="notifications-time">
+                                        <span>{{$userHelpers->getTimeAgoAtrr($notification->created_at)}}</span>
+                                    </div>
+                                </div>
                             @endif
                         </div>
+                        </a>
                     @endforeach
                 @else
                     <div class="notification" id="no-notifications">
@@ -94,7 +123,7 @@ $notifications = $userHelpers->getNotifications();
                     </div>
                 @endif
             </div>
-            <li><i class="fa-solid fa-comment"></i></li>
+            <li><a class="hyper_link" href="/messenger/chat"><i class="fa-solid fa-comment"></i></a></li>
             <li><i class="fa-solid fa-bars"></i></li>
         </ul>
     </div>
@@ -102,7 +131,7 @@ $notifications = $userHelpers->getNotifications();
         <div class="search">
         <div class="search-box">
             <img src="{{asset('storage/client/images/search.png')}}" alt="">
-            <input type="text" placeholder="Search" name="search_profile" id="search_profile">
+            <input type="text" placeholder="Tìm kiếm người dùng" name="search_profile" id="search_profile">
         </div>
         <div class="results-container">
             <div class="results hide">
@@ -110,14 +139,14 @@ $notifications = $userHelpers->getNotifications();
         </div>
         </div>
         <div class="profile-image online" onclick="UserSettingToggle()">
-            <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+            <img src="{{asset($authProfile->avatar)}}" alt="">
         </div>
 
     </div>
     <div class="user-settings">
         <div class="profile-darkButton">
             <div class="user-profile">
-                <img src="{{asset('storage/client/images/profile-pic.jpg')}}" alt="">
+                <img src="{{asset($authProfile->avatar)}}" alt="">
                 <div>
                     <p>{{$authInf->name}}</p>
                     <input type="hidden" id="user-id_hidden" data-user_id="{{$authId}}">
@@ -139,7 +168,7 @@ $notifications = $userHelpers->getNotifications();
         <hr>
         <div class="settings-links">
             <img src="{{asset('storage/client/images/setting.png')}}" alt="" class="settings-icon">
-            <a href="#">Cài đặt và quyền riêng tư <img src="{{asset('storage/client/images/arrow.png')}}" alt=""></a>
+            <a href="/changePassword">Đổi mật khẩu <img src="{{asset('storage/client/images/arrow.png')}}" alt=""></a>
         </div>
 
         <div class="settings-links">
@@ -163,30 +192,11 @@ $notifications = $userHelpers->getNotifications();
 <!-- content-area------------ -->
 
 <div class="container-custom">
-    <div class="left-sidebar">
-        <div class="important-links">
-            <a href="/"><img src="{{asset('storage/client/images/news.png')}}" alt="">Bảng tin</a>
-            <a href=""><img src="{{asset('storage/client/images/friends.png')}}" alt="">Bạn bè</a>
-            <a href=""><img src="{{asset('storage/client/images/group.png')}}" alt="">Nhóm</a>
-            <a href=""><img src="{{asset('storage/client/images/marketplace.png')}}" alt="">Marketplace</a>
-            <a href=""><img src="{{asset('storage/client/images/watch.png')}}" alt="">Watch</a>
-            <a href="">Xem thêm</a>
-        </div>
-
-        <div class="shortcut-links">
-            <p>Lối tắt của bạn</p>
-            <a href="#"> <img src="{{asset('storage/client/images/shortcut-1.png')}}" alt="">Web Developers</a>
-            <a href="#"> <img src="{{asset('storage/client/images/shortcut-2.png')}}" alt="">Web Design Course</a>
-            <a href="#"> <img src="{{asset('storage/client/images/shortcut-3.png')}}" alt="">Full Stack Development</a>
-            <a href="#"> <img src="{{asset('storage/client/images/shortcut-4.png')}}" alt="">Website Experts</a>
-        </div>
-    </div>
-
     <!-- main-content------- -->
     @yield('main-content')
 </div>
 <footer id="footer">
-    <p> Copyright 2023 - NEXUS &copy;</p>
+    <p style="color: black"> Copyright 2023 - NEXUS &copy;</p>
 </footer>
 <script src="https://cdn.jsdelivr.net/npm/modaal@0.4.4/dist/js/modaal.min.js" integrity="sha256-e8kfivdhut3LQd71YXKqOdkWAG1JKiOs2hqYJTe0uTk=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -195,7 +205,9 @@ $notifications = $userHelpers->getNotifications();
 <script src="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js" integrity="sha512-r2yd2GP87iHAsf2K+ARvu01VtR7Bs04la0geDLbFlB/38AruUbA5qfmtXwXx6FZBQGJRogiPtEqtfk/fnQfaYA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{asset('storage/client/js/pusher.js')}}"></script>
+@livewireScripts
 <script src="{{asset('storage/client/js/index.js')}}"></script>
+<script src="{{asset('js/app.js')}}"></script>
 @yield('script-bottom')
 </body>
 </html>

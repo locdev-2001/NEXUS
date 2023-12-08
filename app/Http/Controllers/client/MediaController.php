@@ -22,6 +22,7 @@ class MediaController extends Controller
         return response()->json([
             'name' => $filePath,
             'original_name' => $file->getClientOriginalName(),
+            'type'=> $extension =='mp4' ? 'video' : 'image'
         ]);
     }
     public function deleteMedia(Request $request){

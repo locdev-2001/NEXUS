@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'active',
         'created_at',
         'updated_at'
     ];
@@ -70,5 +71,15 @@ class User extends Authenticatable
     public function routeNotificationForDatabase($notification)
     {
         return array(['id' => $this->id]);
+    }
+    public function isAdmin(){
+        return $this->role === 1;
+    }
+    public function scopeSearch($query,$term){
+        $term = "%$term%";
+        $query->where(function($query) use ($term){
+            $query->where('name','like',$term)
+                ->orWhere('email','like',$term);
+        });
     }
 }

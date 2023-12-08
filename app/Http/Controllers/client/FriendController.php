@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FriendRequests;
 use App\Models\Friends;
 use App\Models\Notification;
+use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,10 @@ class FriendController extends Controller
         // Tạo bản ghi mới và lưu vào cơ sở dữ liệu
         $friendRequest = FriendRequests::create($param);
         $sender = User::findOrFail($senderId);
+        $senderProfile = Profile::where('user_id',$sender->id)->first();
         $data=[
+            'avatar'=>$senderProfile->avatar,
+            'hyper_link'=>'/profile?id='.$senderId,
             'senderId'=>$senderId,
             'message'=>$sender->name.' đã gửi cho bạn lời mời kết bạn',
             'action_text'=>'Chấp nhận',
@@ -71,19 +75,38 @@ class FriendController extends Controller
         $param['friend_id'] = $senderId;
         Friends::create($param);
         $sender = User::findOrFail($senderId);
+        $profile = Profile::where('user_id',$recipientId)->first();
         $data=[
+            'avatar'=>$profile->avatar,
+            'hyper_link'=>'/profile?id='.$recipientId,
             'senderId'=>$recipientId,
             'message'=>Auth::user()->name.' đã chấp nhận lời mời kết bạn của bạn',
         ];
         Notification::create([
             'sender_id'=>$recipientId,
             'recipient_id'=>$senderId,
+            'hyper_link'=>'/profile?id='.$recipientId,
             'data'=>json_encode($data),
             'type'=>2,// accept friend request
         ]);
         event( new AcceptFriendRequest($recipientId,$senderId,$data));
         return response()->json([
-            'senderName' =>$sender->name
+            'senderName' =>$sender->name,
+            'hyper_link'=>'/profile?id='.$recipientId,
+        ]);
+    }
+    public function unfriend(Request $request){
+        $myId = Auth::id();
+        $friendId= $request->input('f_id');
+        $friend = Friends::where(function($query) use($myId, $friendId) {
+            $query->where('user_id', $myId)
+                ->where('friend_id', $friendId);
+        })->orWhere(function($query) use($myId, $friendId) {
+            $query->where('user_id', $friendId)
+                ->where('friend_id', $myId);
+        })->delete();
+        return response()->json([
+            'success'=>'thanh cong'
         ]);
     }
 }

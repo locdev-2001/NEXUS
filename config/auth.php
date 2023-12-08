@@ -40,6 +40,10 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'users', // Sử dụng bảng users cho guard admin
+        ],
     ],
 
     /*

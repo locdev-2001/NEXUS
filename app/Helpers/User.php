@@ -4,6 +4,7 @@ namespace App\Helpers;
 use App\Models\FriendRequests;
 use App\Models\Friends;
 use App\Models\Notification;
+use App\Models\Profile;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,6 +14,10 @@ class UserHelpers{
     }
     public static function getId(){
         return Auth::id();
+    }
+    public function getProfile(){
+        $profile = new Profile();
+        return $profile::where('user_id',Auth::id())->first();
     }
     public function getNotifications(){
         $userId = Auth::id();
@@ -24,7 +29,7 @@ class UserHelpers{
 //        });
         return $notifications;
     }
-    public function getFriendRequest($recipientId){
+    public static function getFriendRequest($recipientId){
         $senderId = Auth::id();
         return FriendRequests::where(function ($query) use ($senderId, $recipientId) {
             $query->where('sender_id', $senderId)
@@ -35,7 +40,7 @@ class UserHelpers{
                 ->where('recipient_id', $senderId);
         })->first();
     }
-    public function isFriend($userId){
+    public static function isFriend($userId){
         $myId = Auth::id();
         $friendRelationship = Friends::where(function($query) use ($myId,$userId){
             $query->where('user_id',$userId)->where('friend_id',$myId);// kiểm tra xem tôi có kết bạn với người này chưa

@@ -48,7 +48,7 @@
                             @enderror
                             <div class="form-group last mb-4">
                                 <label for="password">Mật khẩu 8-12 ký tự</label>
-                                <input type="password" class="form-control" id="password" name="password" placeholder="Vui lòng nhập mật khẩu">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Vui lòng nhập mật khẩu" autocomplete="off">
                                 <span class="show-password"><i class="icon-eye"></i></span>
                             </div>
                             @error('password')
