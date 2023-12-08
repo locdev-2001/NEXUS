@@ -19,6 +19,7 @@ class Posts extends Model
         'user_id',
         'content_text',
         'post_mode',
+        'active',
         'created_at',
         'updated_at'
     ];
@@ -38,5 +39,11 @@ class Posts extends Model
     }
     public function commentReaction(){
         return $this->hasMany(Comment_reaction::class);
+    }
+    public function scopeSearch($query,$term){
+        $term = "%$term%";
+        $query->where(function($query) use ($term){
+            $query->where('content_text','like',$term);
+        });
     }
 }

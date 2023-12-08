@@ -13,6 +13,7 @@ use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends BaseClientController
 {   private $_data=[];
@@ -63,9 +64,18 @@ class PostController extends BaseClientController
     public function edit(Request $request){
         $p_id = $request->input('p_id');
         $content = $request->input('content');
+        $post_mode = $request->input('post_mode');
+        $arrImgUpdate = $request->input('arrImgUpdate');
         $post = Posts::findOrFail($p_id);
         $post->content_text = $content;
+        $post->post_mode = $post_mode;
         $post->save();
+        $mediaToDelete = Media::whereIn('media_dir', $arrImgUpdate)->where('post_id', $p_id)->get();
+        foreach ($mediaToDelete as $media) {
+            // Xóa tệp vật lý trước khi xóa cơ sở dữ liệu
+            Storage::delete($media->media_dir);
+            $media->delete();
+        }
         return response()->json([
            'success'=>'Thành công'
         ]);

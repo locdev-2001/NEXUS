@@ -24,11 +24,17 @@ class AuthController extends Controller
                'email.email'=>'Địa chỉ email không đúng định dạng',
                'password.required'=>'Vui lòng nhập mật khẩu'
            ]);
-           if(Auth::attempt($credentials)){
-               return redirect()->intended('/');
+           $user = User::where('email',$credentials['email'])->first();
+           if($user && $user->active == 1){
+               if(Auth::attempt($credentials)){
+                   return redirect()->intended('/');
+               }
+               else{
+                   return redirect()->back()->withErrors(['errorLogin'=>'Sai địa chỉ Email hoặc mật khẩu']);
+               }
            }
            else{
-               return redirect()->back()->withErrors(['errorLogin'=>'Sai địa chỉ Email hoặc mật khẩu']);
+               return redirect()->back()->withErrors(['errorLogin'=>'Tài khoản đã bị khóa vui lòng kiểm tra email để biết thêm chi tiết']);
            }
         }
         return view('client.login');

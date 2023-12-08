@@ -95,4 +95,18 @@ class FriendController extends Controller
             'hyper_link'=>'/profile?id='.$recipientId,
         ]);
     }
+    public function unfriend(Request $request){
+        $myId = Auth::id();
+        $friendId= $request->input('f_id');
+        $friend = Friends::where(function($query) use($myId, $friendId) {
+            $query->where('user_id', $myId)
+                ->where('friend_id', $friendId);
+        })->orWhere(function($query) use($myId, $friendId) {
+            $query->where('user_id', $friendId)
+                ->where('friend_id', $myId);
+        })->delete();
+        return response()->json([
+            'success'=>'thanh cong'
+        ]);
+    }
 }

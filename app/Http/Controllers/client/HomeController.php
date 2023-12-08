@@ -18,7 +18,7 @@ class HomeController extends BaseClientController
     ];
     public function index(){
 
-        $posts = Posts::with(['media','reactions','user.profile','comments.user','comments.replies.user'])->orderBy('created_at','desc')->get();
+        $posts = Posts::with(['media','reactions','user.profile','comments.user','comments.replies.user'])->where('active','1')->orderBy('created_at','desc')->get();
         $postsArr = $posts->map(function ($p){
 //            dd($p->comments->toArray());
             $comments = $this->buildNestedComments($p->comments);
@@ -29,6 +29,7 @@ class HomeController extends BaseClientController
                 'user_name'=>$p->user->name,
                 'user_avatar'=>$p->user->profile->avatar,
                 'content_text' => $p->content_text,
+                'post_mode'=>$p->post_mode,
                 'media_dir' => $p->media->pluck('media_dir')->toArray(),
                 'reactions'=>$p->reactions->toArray(),
                 'comments'=>$comments,

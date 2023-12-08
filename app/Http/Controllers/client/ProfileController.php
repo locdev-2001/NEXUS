@@ -43,9 +43,11 @@ class ProfileController extends BaseClientController
                 'user_id' => $p->user_id,
                 'user_name'=>$p->user->name,
                 'content_text' => $p->content_text,
+                'post_mode'=>$p->post_mode,
                 'media_dir' => $p->media->pluck('media_dir')->toArray(),
                 'reactions'=>$p->reactions->toArray(),
                 'comments'=>$comments,
+                'active'=>$p->active,
                 'reaction_comment'=>Comment_reaction::where('post_id',$p->id)->get(),
                 'countComment'=>count($p->comments),
                 'created_at'=> $this->getTimeAgoAtrr($p->created_at),
@@ -64,7 +66,7 @@ class ProfileController extends BaseClientController
     public function searchAjax(Request $request){
         $currentUserId = Auth::id();
         $keyword = $request->input('keyword');
-        $users = User::with('profile')->where('name','like','%'.$keyword.'%')->where('id', '!=', $currentUserId)->get();
+        $users = User::with('profile')->where('name','like','%'.$keyword.'%')->where('id', '!=', $currentUserId)->where('role',0)->get();
         return response()->json([
             'data'=>$users
         ]);

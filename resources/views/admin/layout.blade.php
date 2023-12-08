@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-
+    @livewireStyles
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -150,6 +150,7 @@
             @Yield('equipmentEdit')
             @Yield('list-borrow')
             @Yield('editBorrow')
+            @yield('viewPost')
         </div>
     </div>
     <!-- /.content-wrapper -->
@@ -175,7 +176,6 @@
 
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
-    $.widget.bridge('uibutton', $.ui.button);
     $(document).on('click', '.nav-item a', function() {
         $('.nav-link').removeClass('active');
         $(this).addClass('active');
@@ -206,7 +206,8 @@
 <!-- AdminLTE for demo purposes -->
 <script src="{{asset('dist/js/demo.js')}}"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="{{asset('dist/js/pages/dashboard.js')}}"></script>
+{{--<script src="{{asset('dist/js/pages/dashboard.js')}}"></script>--}}
+@livewireScripts
 </body>
 
 </html>

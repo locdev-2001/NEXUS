@@ -15,8 +15,7 @@ class AdminUserController extends Controller
 {
     //
     public function index(){
-        $users = User::with('profile')->orderBy('created_at', 'desc')->paginate(10);
-        return view('admin.users',compact('users'));
+        return view('admin.users');
     }
     public function edit(Request $request,$id){
         $user = User::with('profile')->findOrFail($id);
@@ -36,7 +35,7 @@ class AdminUserController extends Controller
                 $password = $user->password;
             }
             else{
-                $password = $request->input('password');
+                $password = bcrypt($request->input('password'));
             }
             $user->password = $password;
             $user->save();

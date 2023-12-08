@@ -24,4 +24,7 @@ class AdminPostController extends Controller
         $media = Media::where('post_id',$post->id)->delete();
         return redirect('/admin/posts')->with('success', 'Xóa bài viết thành công');
     }
+    public function viewPost($id){
+        return view('admin.view_post');
+    }
 }

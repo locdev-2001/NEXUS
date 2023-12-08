@@ -123,7 +123,7 @@ $notifications = $userHelpers->getNotifications();
                     </div>
                 @endif
             </div>
-            <li><a class="hyper_link" href="/messenger/users"><i class="fa-solid fa-comment"></i></a></li>
+            <li><a class="hyper_link" href="/messenger/chat"><i class="fa-solid fa-comment"></i></a></li>
             <li><i class="fa-solid fa-bars"></i></li>
         </ul>
     </div>
@@ -131,7 +131,7 @@ $notifications = $userHelpers->getNotifications();
         <div class="search">
         <div class="search-box">
             <img src="{{asset('storage/client/images/search.png')}}" alt="">
-            <input type="text" placeholder="Search" name="search_profile" id="search_profile">
+            <input type="text" placeholder="Tìm kiếm người dùng" name="search_profile" id="search_profile">
         </div>
         <div class="results-container">
             <div class="results hide">
@@ -168,7 +168,7 @@ $notifications = $userHelpers->getNotifications();
         <hr>
         <div class="settings-links">
             <img src="{{asset('storage/client/images/setting.png')}}" alt="" class="settings-icon">
-            <a href="#">Cài đặt và quyền riêng tư <img src="{{asset('storage/client/images/arrow.png')}}" alt=""></a>
+            <a href="/changePassword">Đổi mật khẩu <img src="{{asset('storage/client/images/arrow.png')}}" alt=""></a>
         </div>
 
         <div class="settings-links">
@@ -205,8 +205,9 @@ $notifications = $userHelpers->getNotifications();
 <script src="https://cdn.jsdelivr.net/gh/taras-d/images-grid/src/images-grid.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.4.0/color-thief.min.js" integrity="sha512-r2yd2GP87iHAsf2K+ARvu01VtR7Bs04la0geDLbFlB/38AruUbA5qfmtXwXx6FZBQGJRogiPtEqtfk/fnQfaYA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="{{asset('storage/client/js/pusher.js')}}"></script>
-<script src="{{asset('storage/client/js/index.js')}}"></script>
-@yield('script-bottom')
 @livewireScripts
+<script src="{{asset('storage/client/js/index.js')}}"></script>
+<script src="{{asset('js/app.js')}}"></script>
+@yield('script-bottom')
 </body>
 </html>

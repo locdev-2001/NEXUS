@@ -5,6 +5,7 @@ use App\Http\Controllers\admin\AdminLoginController;
 use App\Http\Controllers\admin\AdminPostController;
 use App\Http\Controllers\admin\AdminUserController;
 use App\Http\Controllers\client\AuthController;
+use App\Http\Controllers\client\ChangePasswordController;
 use App\Http\Controllers\client\CommentController;
 use App\Http\Controllers\client\FriendController;
 use App\Http\Controllers\client\HomeController;
@@ -34,6 +35,7 @@ Route::group(['middleware'=>'adminLogin'],function(){
         Route::any('/edit_user/{ID}',[AdminUserController::class,'edit'])->name('admin.edit.user');
         Route::any('/delete/{ID}',[AdminUserController::class,'delete'])->name('admin.delete.user');
         Route::any('/posts',[AdminPostController::class,'index'])->name('admin.posts');
+        Route::any('/post/{ID}',[AdminPostController::class,'viewPost'])->name('admin.viewPost');
         Route::any('/delete_post/{ID}',[AdminPostController::class,'delete'])->name('admin.delete.post');
     });
 
@@ -66,11 +68,13 @@ Route::group(['middleware'=>'login'],function (){
     });
     Route::any('/accept-friend-request',[FriendController::class,'accept'])->name('client.accept.friend.request');
     Route::any('/reject-friend-request',[FriendController::class,'reject'])->name('client.reject.friend.request');
+    Route::any('/unfriend',[FriendController::class,'unfriend'])->name('client.friend.unfriend');
     Route::post('/reaction-post',[ReactionController::class,'reaction'])->name('client.reaction');
     Route::group(['prefix'=>'messenger'],function(){
-        Route::get('/users',CreateChat::class)->name('messenger.users');
+        Route::get('/users',[CreateChat::class,'checkConversation'])->name('messenger.users');
         Route::get('/chat{key?}',Main::class)->name('messenger.chat');
     });
+    Route::any('/changePassword',[ChangePasswordController::class,'index'])->name('client.changePassword');
     Route::get('/dashboard',function (){
         return view('dashboard');
     })->middleware('auth')->name('dashboard');
